@@ -8,7 +8,7 @@ contract Stablecoin is ERC20, Ownable {
     uint256 public totalSupplyLimit;
     address public minter;
 
-    event CheckBalance(string text, uint amount);
+    event CheckBalance(uint amount);
 
     constructor(
         string memory _name,
@@ -29,21 +29,24 @@ contract Stablecoin is ERC20, Ownable {
 
     // Mint new tokens up to the supply limit
     function mint(address _account, uint256 _amount) external onlyMinter {
+        require(_account != address(0), "Account does not exist");
+        require(_amount > 0, "Amount should be greater than 0");
         require(totalSupply() + _amount <= totalSupplyLimit, "Exceeds supply limit");
+
         _mint(_account, _amount);
     }
 
     // Change the minter address
     function changeMinter(address _newMinter) external onlyOwner {
+        require(_newMinter != address(0), "New Minter does not exist");
         minter = _newMinter;
     }
     
     function getBalance(address user_account) external returns (uint){
-    
-       string memory data = "User Balance is : ";
-       uint user_bal = user_account.balance;
-       emit CheckBalance(data, user_bal );
-       return (user_bal);
+        require(user_account != address(0), "Address does not exist");
+        uint user_bal = user_account.balance;
+        emit CheckBalance(user_bal);
+        return (user_bal);
 
     }
 }
